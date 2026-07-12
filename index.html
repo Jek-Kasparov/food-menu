@@ -28,15 +28,14 @@
         .card-icon { font-size: 2.5rem; line-height: 1;}
         .card-content h3 { margin: 0 0 5px 0; font-size: 1.1rem; padding-right: 40px;}
         .card-content p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
+        .diff-1 { background: #d1fae5; color: #065f46; } .diff-2 { background: #fef3c7; color: #92400e; } .diff-3 { background: #fee2e2; color: #991b1b; }
         
-        /* МОДАЛЬНОЕ ОКНО РЕЦЕПТА */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 30px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #9ca3af; }
         .recipe-img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #e5e7eb; }
         .recipe-text { white-space: pre-line; background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; line-height: 1.5; }
-        
-        /* Конструктор */
         .addon-selector { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--primary); text-align: center; }
         .addon-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 5px; font-weight: bold; }
         .addon-btn.active { background: var(--primary); color: white; }
@@ -69,6 +68,14 @@
             <button class="filter-btn" onclick="setCategory('Крупы')">🌾 Крупы</button>
             <button class="filter-btn" onclick="setCategory('Макароны')">🍝 Макароны</button>
             <button class="filter-btn" onclick="setCategory('Мучное')">🥖 Перекус / Лаваш</button>
+        </div>
+
+        <div class="controls" id="diffFilters">
+            <div class="controls-title">Сложность готовки</div>
+            <button class="filter-btn active" onclick="setDifficulty('Все')">Любая</button>
+            <button class="filter-btn" onclick="setDifficulty(1)">🟢 Быстро</button>
+            <button class="filter-btn" onclick="setDifficulty(2)">🟡 Средне</button>
+            <button class="filter-btn" onclick="setDifficulty(3)">🔴 Долго</button>
         </div>
         
         <div class="grid" id="catalogGrid"></div>
@@ -114,22 +121,29 @@
         }
         if (localStorage.getItem('auth') === 'true') verify();
 
-        let currentCat = 'Все';
+        let currentCat = 'Все', currentDiff = 'Все';
+
+        function getDiffBadge(diff) {
+            if (diff === 1) return '<span class="badge diff-1">🟢 Легко</span>';
+            if (diff === 2) return '<span class="badge diff-2">🟡 Средне</span>';
+            if (diff === 3) return '<span class="badge diff-3">🔴 Долго</span>';
+            return '';
+        }
 
         function applyFilters() {
             const grid = document.getElementById('catalogGrid');
             if (typeof meals === 'undefined') return;
 
-            // Отображаем в каталоге ТОЛЬКО основные блюда (у которых ID меньше 100), скрывая системные допы
-            let filtered = meals.filter(m => m.id < 100);
+            let filtered = meals;
             if (currentCat !== 'Все') filtered = filtered.filter(m => m.cat === currentCat);
+            if (currentDiff !== 'Все') filtered = filtered.filter(m => m.diff === currentDiff);
             
             grid.innerHTML = '';
             filtered.forEach(m => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openRecipe(m.id);
-                card.innerHTML = `<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div>`;
+                card.innerHTML = `${getDiffBadge(m.diff)}<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div>`;
                 grid.appendChild(card);
             });
         }
@@ -140,7 +154,16 @@
             applyFilters();
         }
 
-        // ОТКРЫТИЕ ОКНА С РЕЦЕПТОМ
+        function setDifficulty(diff) {
+            currentDiff = diff;
+            document.querySelectorAll('#diffFilters .filter-btn').forEach(b => {
+                b.classList.remove('active');
+                if (diff === 'Все' && b.innerText === 'Любая') b.classList.add('active');
+                else if (diff !== 'Все' && b.innerText.includes(diff === 1 ? 'Быстро' : diff === 2 ? 'Средне' : 'Долго')) b.classList.add('active');
+            });
+            applyFilters();
+        }
+
         function openRecipe(id) {
             const meal = meals.find(m => m.id === id);
             if(!meal) return;
@@ -149,11 +172,9 @@
             document.getElementById('modalImg').src = meal.img || 'https://placehold.co/600x400?text=Нет+фото';
             document.getElementById('modalRecipe').innerText = meal.recipe;
             
-            // Сбрасываем блок с допами
             document.getElementById('addonRecipeBlock').style.display = 'none';
             const constructor = document.getElementById('modalConstructor');
             
-            // Если у блюда прописаны addons (конструктор вариантов)
             if(meal.addons && meal.addons.length > 0) {
                 constructor.style.display = 'block';
                 const btnContainer = document.getElementById('addonButtons');
@@ -176,16 +197,13 @@
             document.getElementById('recipeModal').style.display = 'flex';
         }
 
-        // ВЫБОР ДОПОЛНЕНИЯ ВНУТРИ РЕЦЕПТА
         function selectAddon(addonId, clickedBtn) {
-            // Переключаем активный класс у кнопок конструктора
             document.querySelectorAll('.addon-btn').forEach(b => b.classList.remove('active'));
             clickedBtn.classList.add('active');
 
             const addon = meals.find(m => m.id === addonId);
             if(!addon) return;
 
-            // Показываем блок рецепта допа и подгружаем данные
             document.getElementById('addonTitle').innerText = `Вместе с: ${addon.name}`;
             document.getElementById('addonImg').src = addon.img || 'https://placehold.co/600x400?text=Нет+фото';
             document.getElementById('addonRecipe').innerText = addon.recipe;
