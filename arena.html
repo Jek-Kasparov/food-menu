@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Что поесть? | Арена</title>
+    <style>
+        :root { --bg-color: #f3f4f6; --text-color: #1f2937; --card-bg: #ffffff; --primary: #3b82f6; --accent: #10b981; --border: #e5e7eb; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        
+        #navBar { display: flex; background: white; padding: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; }
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .container { max-width: 1000px; width: 100%; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        
+        .btn-action { background-color: var(--accent); color: white; border: none; font-weight: bold; padding: 12px 24px; border-radius: 20px; cursor: pointer; width: 100%; max-width: 300px; margin-top: 15px; font-size: 1.1rem; }
+        button.filter-btn { background-color: var(--card-bg); border: 1px solid var(--border); color: var(--text-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; margin-top: 20px; }
+        
+        .game-bar { background: #111827; color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .game-bar h2 { margin: 0 0 5px 0; font-size: 1.2rem; }
+        .game-bar p { margin: 0; color: #9ca3af; font-size: 0.9rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 2px solid var(--border); display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; }
+        .card.selected { border-color: var(--accent); background-color: #ecfdf5; transform: scale(1.02); }
+        .card-icon { font-size: 2.5rem; line-height: 1;}
+        .card-content h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .card-content p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+
+        #ratingStage, #resultStage { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .rating-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; width: 100%; max-width: 500px; }
+        .stars { display: flex; gap: 5px; font-size: 1.5rem; color: #e5e7eb; cursor: pointer; }
+        .star.active { color: #fbbf24; }
+        .voter-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        
+        .rps-arena { background: #fef3c7; padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; width: 100%; max-width: 500px; display: none; }
+        .rps-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .rps-btn { font-size: 2.5rem; padding: 10px 20px; background: white; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="navBar">
+        <a href="index.html" class="nav-btn">📖 Каталог блюд</a>
+        <a href="arena.html" class="nav-btn active">⚔️ Арена ужина (Игра)</a>
+    </div>
+
+    <div class="container">
+        <div class="game-bar" id="gameBar">
+            <h2 id="turnTitle">Шаг 1: Женя выбирает еду</h2>
+            <p id="turnDesc">Выбери до 3 блюд, которые ты бы хотел сегодня. (Выбрано: 0/3)</p>
+            <button class="btn-action" id="nextBtn" style="display: none;" onclick="nextPhase()">Готово, передать Алине</button>
+        </div>
+
+        <div class="grid" id="gameGrid"></div>
+
+        <div id="ratingStage">
+            <h2 style="text-align: center;">Оцените блюда (от 1 до 5)</h2>
+            <div id="ratingList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+            <button class="btn-action" onclick="calculateWinner()">Узнать победителя 🏆</button>
+        </div>
+
+        <div id="resultStage">
+            <h1 style="text-align: center; font-size: 3rem;" id="winnerText">Победитель!</h1>
+            <p style="text-align: center; font-size: 1.2rem;" id="winnerFood"></p>
+            <button class="filter-btn" onclick="location.reload()">🔄 Сыграть заново</button>
+            
+            <div class="rps-arena" id="rpsArena">
+                <h3 style="margin-top:0;">Спорная ситуация!</h3>
+                <p>Блюда набрали одинаковый балл. Решаем через Камень-Ножницы-Бумага.</p>
+                <div style="font-size:1.2rem; margin-bottom:10px;">Сейчас ходит: <b id="rpsPlayer">Женя</b></div>
+                <div class="rps-buttons">
+                    <button class="rps-btn" onclick="playRPS('rock')">✊</button>
+                    <button class="rps-btn" onclick="playRPS('scissors')">✌️</button>
+                    <button class="rps-btn" onclick="playRPS('paper')">✋</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="base.js"></script>
+    <script>
+        // Проверка входа (если человек не вводил пароль на главной, его выкинет на главную)
+        if (localStorage.getItem('auth') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        let phase = 'zhenya';
+        let zhenyaPicks = [], alinaPicks = [], uniquePicks = [], ratings = {}, tiedMeals = [];
+
+        function initArena() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            meals.forEach(m => {
+                grid.innerHTML += `<div class="card" id="meal-${m.id}" onclick="togglePick(${m.id})"><div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
+            });
+        }
+        initArena();
+
+        function togglePick(id) {
+            if (phase !== 'zhenya' && phase !== 'alina') return;
+            let picks = phase === 'zhenya' ? zhenyaPicks : alinaPicks;
+            const idx = picks.indexOf(id);
+            
+            if (idx > -1) {
+                picks.splice(idx, 1);
+                document.getElementById('meal-'+id).classList.remove('selected');
+            } else {
+                if (picks.length >= 3) return;
+                picks.push(id);
+                document.getElementById('meal-'+id).classList.add('selected');
+            }
+            updateGameUI(picks);
+        }
+
+        function updateGameUI(picks) {
+            document.getElementById('turnDesc').innerText = `Выбери до 3 блюд. (Выбрано: ${picks.length}/3)`;
+            document.getElementById('nextBtn').style.display = picks.length > 0 ? 'inline-block' : 'none';
+        }
+
+        function nextPhase() {
+            if (phase === 'zhenya') {
+                phase = 'alina';
+                document.getElementById('turnTitle').innerText = 'Шаг 2: Алина выбирает еду';
+                document.querySelectorAll('#gameGrid .card').forEach(c => c.classList.remove('selected'));
+                updateGameUI(alinaPicks);
+            } else if (phase === 'alina') {
+                phase = 'rate';
+                uniquePicks = [...new Set([...zhenyaPicks, ...alinaPicks])];
+                startRating();
+            }
+        }
+
+        function startRating() {
+            document.getElementById('gameGrid').style.display = 'none';
+            document.getElementById('gameBar').style.display = 'none';
+            document.getElementById('ratingStage').style.display = 'flex';
+            
+            const list = document.getElementById('ratingList');
+            uniquePicks.forEach(id => {
+                const meal = meals.find(m => m.id === id);
+                ratings[id] = { zhenya: 0, alina: 0 };
+                list.innerHTML += `<div class="rating-card"><h3 style="margin:0 0 10px 0;">${meal.icon} ${meal.name}</h3>
+                    <div class="voter-row"><span>Женя:</span><div class="stars" id="stars-zhenya-${id}">${generateStars(id, 'zhenya')}</div></div>
+                    <div class="voter-row"><span>Алина:</span><div class="stars" id="stars-alina-${id}">${generateStars(id, 'alina')}</div></div></div>`;
+            });
+        }
+
+        function generateStars(mealId, person) {
+            let html = '';
+            for(let i=1; i<=5; i++) html += `<span class="star" onclick="setRating(${mealId}, '${person}', ${i})">★</span>`;
+            return html;
+        }
+
+        function setRating(mealId, person, score) {
+            ratings[mealId][person] = score;
+            const stars = document.getElementById(`stars-${person}-${mealId}`).children;
+            for(let i=0; i<5; i++) stars[i].classList.toggle('active', i < score);
+        }
+
+        function calculateWinner() {
+            let allRated = true;
+            uniquePicks.forEach(id => { if(ratings[id].zhenya === 0 || ratings[id].alina === 0) allRated = false; });
+            if(!allRated) { alert("Поставьте хотя бы по 1 звезде каждому блюду!"); return; }
+
+            document.getElementById('ratingStage').style.display = 'none';
+            document.getElementById('resultStage').style.display = 'flex';
+            
+            let maxScore = -1; tiedMeals = [];
+            uniquePicks.forEach(id => {
+                const total = ratings[id].zhenya + ratings[id].alina;
+                if (total > maxScore) { maxScore = total; tiedMeals = [id]; }
+                else if (total === maxScore) { tiedMeals.push(id); }
+            });
+
+            if (tiedMeals.length === 1) showFinalWinner(tiedMeals[0]);
+            else {
+                document.getElementById('winnerText').innerText = 'Ничья! ⚔️';
+                document.getElementById('winnerFood').innerText = `Несколько блюд набрали по ${maxScore} очков.`;
+                document.getElementById('rpsArena').style.display = 'block';
+            }
+        }
+
+        function showFinalWinner(mealId) {
+            const meal = meals.find(m => m.id === mealId);
+            document.getElementById('winnerText').innerText = 'Сегодня едим:';
+            document.getElementById('winnerFood').innerHTML = `<span style="font-size: 4rem;">${meal.icon}</span><br><b style="font-size:1.5rem;">${meal.name}</b>`;
+            document.getElementById('rpsArena').style.display = 'none';
+        }
+
+        let rpsPhase = 'zhenya', rpsZhenyaPick = '', rpsAlinaPick = '';
+        function playRPS(choice) {
+            if (rpsPhase === 'zhenya') {
+                rpsZhenyaPick = choice;
+                rpsPhase = 'alina';
+                document.getElementById('rpsPlayer').innerText = 'Алина';
+            } else {
+                rpsAlinaPick = choice;
+                resolveRPS();
+            }
+        }
+
+        function resolveRPS() {
+            const winMap = { 'rock': 'scissors', 'scissors': 'paper', 'paper': 'rock' };
+            if (rpsZhenyaPick === rpsAlinaPick) {
+                alert('Оба выбрали одинаково! Переигрываем.');
+                rpsPhase = 'zhenya'; document.getElementById('rpsPlayer').innerText = 'Женя';
+                return;
+            }
+
+            const winner = winMap[rpsZhenyaPick] === rpsAlinaPick ? 'zhenya' : 'alina';
+            alert(`${winner === 'zhenya' ? 'Женя' : 'Алина'} выигрывает в КНБ!`);
+
+            let bestId = tiedMeals[0], highestScore = -1;
+            tiedMeals.forEach(id => {
+                if (ratings[id][winner] > highestScore) { highestScore = ratings[id][winner]; bestId = id; }
+            });
+            showFinalWinner(bestId);
+        }
+    </script>
+</body>
+</html>

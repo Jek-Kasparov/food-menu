@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Что поесть? | Каталог</title>
+    <style>
+        :root { --bg-color: #f3f4f6; --text-color: #1f2937; --card-bg: #ffffff; --primary: #3b82f6; --accent: #10b981; --border: #e5e7eb; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        
+        #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); position: absolute; top: 0; left: 0; width: 100%; z-index: 100; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .login-box input { font-size: 2rem; text-align: center; letter-spacing: 10px; width: 150px; padding: 10px; border: 2px solid var(--border); border-radius: 12px; margin: 10px 0 20px; outline: none; }
+        .error-text { color: #ef4444; font-size: 0.9rem; display: none; margin-bottom: 10px; }
+
+        #navBar { display: none; background: white; padding: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; }
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .container { max-width: 1000px; width: 100%; margin: 0 auto; padding: 20px; }
+        .controls { background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 15px; text-align: center; }
+        .controls-title { font-weight: bold; margin-bottom: 10px; color: #4b5563; font-size: 0.9rem; text-transform: uppercase; }
+        button.filter-btn { background-color: var(--card-bg); border: 1px solid var(--border); color: var(--text-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; margin: 3px; }
+        button.filter-btn.active { background-color: var(--primary); color: white; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); display: flex; align-items: flex-start; gap: 15px; position: relative; }
+        .card-icon { font-size: 2.5rem; line-height: 1;}
+        .card-content h3 { margin: 0 0 5px 0; font-size: 1.1rem; padding-right: 40px;}
+        .card-content p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
+        .diff-1 { background: #d1fae5; color: #065f46; } .diff-2 { background: #fef3c7; color: #92400e; } .diff-3 { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2 style="margin: 0; color: #111827;">Доступ 🔒</h2>
+            <input type="password" id="passInput" maxlength="4" onkeyup="if(event.key==='Enter') verify()">
+            <div id="errorText" class="error-text">Неверный код!</div>
+            <button class="nav-btn active" style="width: 100%; padding: 12px;" onclick="verify()">Войти</button>
+        </div>
+    </div>
+
+    <div id="navBar">
+        <a href="index.html" class="nav-btn active">📖 Каталог блюд</a>
+        <a href="arena.html" class="nav-btn">⚔️ Арена ужина (Игра)</a>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <h1 style="text-align:center; margin-top:0;">Наше меню</h1>
+        <div class="controls" id="categoryFilters">
+            <div class="controls-title">Категории</div>
+            <button class="filter-btn active" onclick="setCategory('Все')">Все блюда</button>
+            <button class="filter-btn" onclick="setCategory('Мясо')">🍗 Мясо</button>
+            <button class="filter-btn" onclick="setCategory('Картофель')">🥔 Картошка</button>
+            <button class="filter-btn" onclick="setCategory('Крупы')">🌾 Крупы</button>
+            <button class="filter-btn" onclick="setCategory('Макароны')">🍝 Макароны</button>
+            <button class="filter-btn" onclick="setCategory('Мучное')">🥖 Перекус / Лаваш</button>
+        </div>
+        <div class="controls" id="diffFilters">
+            <div class="controls-title">Сложность готовки</div>
+            <button class="filter-btn active" onclick="setDifficulty('Все')">Любая</button>
+            <button class="filter-btn" onclick="setDifficulty(1)">🟢 Быстро</button>
+            <button class="filter-btn" onclick="setDifficulty(2)">🟡 Средне</button>
+            <button class="filter-btn" onclick="setDifficulty(3)">🔴 Долго</button>
+        </div>
+        <div class="grid" id="catalogGrid"></div>
+    </div>
+
+    <script src="base.js"></script>
+    <script>
+        function verify() {
+            if (hashCode(document.getElementById('passInput').value) === correctHash || localStorage.getItem('auth') === 'true') {
+                localStorage.setItem('auth', 'true');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('navBar').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'block';
+                applyFilters();
+            } else {
+                document.getElementById('errorText').style.display = 'block';
+                document.getElementById('passInput').value = '';
+            }
+        }
+        
+        if (localStorage.getItem('auth') === 'true') verify();
+
+        let currentCat = 'Все', currentDiff = 'Все';
+        function getDiffBadge(diff) {
+            if (diff === 1) return '<span class="badge diff-1">🟢 Легко</span>';
+            if (diff === 2) return '<span class="badge diff-2">🟡 Средне</span>';
+            if (diff === 3) return '<span class="badge diff-3">🔴 Долго</span>';
+            return '';
+        }
+
+        function applyFilters() {
+            let filtered = meals;
+            if (currentCat !== 'Все') filtered = filtered.filter(m => m.cat === currentCat);
+            if (currentDiff !== 'Все') filtered = filtered.filter(m => m.diff === currentDiff);
+            
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '';
+            filtered.forEach(m => {
+                grid.innerHTML += `<div class="card">${getDiffBadge(m.diff)}<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
+            });
+        }
+
+        function setCategory(cat) {
+            currentCat = cat;
+            document.querySelectorAll('#categoryFilters .filter-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(cat) || (cat === 'Все' && b.innerText === 'Все блюда')));
+            applyFilters();
+        }
+
+        function setDifficulty(diff) {
+            currentDiff = diff;
+            document.querySelectorAll('#diffFilters .filter-btn').forEach(b => {
+                b.classList.remove('active');
+                if (diff === 'Все' && b.innerText === 'Любая') b.classList.add('active');
+                else if (diff !== 'Все' && b.innerText.includes(diff === 1 ? 'Быстро' : diff === 2 ? 'Средне' : 'Долго')) b.classList.add('active');
+            });
+            applyFilters();
+        }
+    </script>
+</body>
+</html>
