@@ -14,7 +14,7 @@
         .error-text { color: #ef4444; font-size: 0.9rem; display: none; margin-bottom: 10px; }
 
         #navBar { display: none; background: white; padding: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; }
+        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; display: flex; align-items: center;}
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         .container { max-width: 1000px; width: 100%; margin: 0 auto; padding: 20px; }
@@ -39,13 +39,14 @@
             <h2 style="margin: 0; color: #111827;">Доступ 🔒</h2>
             <input type="password" id="passInput" maxlength="4" onkeyup="if(event.key==='Enter') verify()">
             <div id="errorText" class="error-text">Неверный код!</div>
-            <button class="nav-btn active" style="width: 100%; padding: 12px;" onclick="verify()">Войти</button>
+            <button class="nav-btn active" style="width: 100%; padding: 12px; justify-content: center;" onclick="verify()">Войти</button>
         </div>
     </div>
 
     <div id="navBar">
         <a href="index.html" class="nav-btn active">📖 Каталог блюд</a>
         <a href="arena.html" class="nav-btn">⚔️ Арена ужина (Игра)</a>
+        <button class="nav-btn" style="background: #ef4444; color: white; border: none; margin-left: auto;" onclick="logout()">Выйти 🔒</button>
     </div>
 
     <div class="container" id="mainContent" style="display: none;">
@@ -71,7 +72,19 @@
 
     <script src="base.js"></script>
     <script>
+        function logout() {
+            localStorage.removeItem('auth');
+            location.reload();
+        }
+
         function verify() {
+            // Если base.js не загрузился, переменная hashCode будет недоступна. Ловим эту ошибку.
+            if (typeof hashCode === 'undefined') {
+                document.getElementById('errorText').innerText = "Критическая ошибка: файл base.js не найден!";
+                document.getElementById('errorText').style.display = 'block';
+                return;
+            }
+
             if (hashCode(document.getElementById('passInput').value) === correctHash || localStorage.getItem('auth') === 'true') {
                 localStorage.setItem('auth', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
@@ -79,6 +92,7 @@
                 document.getElementById('mainContent').style.display = 'block';
                 applyFilters();
             } else {
+                document.getElementById('errorText').innerText = "Неверный код!";
                 document.getElementById('errorText').style.display = 'block';
                 document.getElementById('passInput').value = '';
             }
@@ -95,12 +109,24 @@
         }
 
         function applyFilters() {
+            const grid = document.getElementById('catalogGrid');
+            
+            // Защита от пропавшего файла base.js
+            if (typeof meals === 'undefined') {
+                grid.innerHTML = '<h3 style="color:#ef4444; grid-column: 1/-1; text-align:center;">База данных пуста! Проверьте, что файл base.js загружен на GitHub.</h3>';
+                return;
+            }
+
             let filtered = meals;
             if (currentCat !== 'Все') filtered = filtered.filter(m => m.cat === currentCat);
             if (currentDiff !== 'Все') filtered = filtered.filter(m => m.diff === currentDiff);
             
-            const grid = document.getElementById('catalogGrid');
             grid.innerHTML = '';
+            if(filtered.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Ничего не найдено.</p>';
+                return;
+            }
+
             filtered.forEach(m => {
                 grid.innerHTML += `<div class="card">${getDiffBadge(m.diff)}<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
             });
