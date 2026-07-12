@@ -24,12 +24,22 @@
         button.filter-btn.active { background-color: var(--primary); color: white; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); display: flex; align-items: flex-start; gap: 15px; position: relative; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); display: flex; align-items: flex-start; gap: 15px; position: relative; cursor: pointer;}
         .card-icon { font-size: 2.5rem; line-height: 1;}
         .card-content h3 { margin: 0 0 5px 0; font-size: 1.1rem; padding-right: 40px;}
         .card-content p { margin: 0; font-size: 0.85rem; color: #6b7280; }
-        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .diff-1 { background: #d1fae5; color: #065f46; } .diff-2 { background: #fef3c7; color: #92400e; } .diff-3 { background: #fee2e2; color: #991b1b; }
+        
+        /* МОДАЛЬНОЕ ОКНО РЕЦЕПТА */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 30px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #9ca3af; }
+        .recipe-img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #e5e7eb; }
+        .recipe-text { white-space: pre-line; background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; line-height: 1.5; }
+        
+        /* Конструктор */
+        .addon-selector { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--primary); text-align: center; }
+        .addon-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 5px; font-weight: bold; }
+        .addon-btn.active { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -60,31 +70,37 @@
             <button class="filter-btn" onclick="setCategory('Макароны')">🍝 Макароны</button>
             <button class="filter-btn" onclick="setCategory('Мучное')">🥖 Перекус / Лаваш</button>
         </div>
-        <div class="controls" id="diffFilters">
-            <div class="controls-title">Сложность готовки</div>
-            <button class="filter-btn active" onclick="setDifficulty('Все')">Любая</button>
-            <button class="filter-btn" onclick="setDifficulty(1)">🟢 Быстро</button>
-            <button class="filter-btn" onclick="setDifficulty(2)">🟡 Средне</button>
-            <button class="filter-btn" onclick="setDifficulty(3)">🔴 Долго</button>
-        </div>
+        
         <div class="grid" id="catalogGrid"></div>
+    </div>
+
+    <div class="modal" id="recipeModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="document.getElementById('recipeModal').style.display='none'">&times;</span>
+            <h2 id="modalTitle" style="margin-top:0;">Название</h2>
+            
+            <div id="modalConstructor" class="addon-selector" style="display:none;">
+                <div style="font-weight:bold; margin-bottom:8px;">Какой гарнир/добавку выберем? 🤔</div>
+                <div id="addonButtons"></div>
+            </div>
+
+            <img id="modalImg" class="recipe-img" src="" alt="Фото блюда">
+            <div id="modalRecipe" class="recipe-text"></div>
+
+            <div id="addonRecipeBlock" style="display:none; border-top: 2px dashed var(--border); padding-top:15px; margin-top:15px;">
+                <h3 id="addonTitle">Дополнительно</h3>
+                <img id="addonImg" class="recipe-img" src="" alt="Фото добавки">
+                <div id="addonRecipe" class="recipe-text"></div>
+            </div>
+        </div>
     </div>
 
     <script src="base.js"></script>
     <script>
-        function logout() {
-            localStorage.removeItem('auth');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('auth'); location.reload(); }
 
         function verify() {
-            // Если base.js не загрузился, переменная hashCode будет недоступна. Ловим эту ошибку.
-            if (typeof hashCode === 'undefined') {
-                document.getElementById('errorText').innerText = "Критическая ошибка: файл base.js не найден!";
-                document.getElementById('errorText').style.display = 'block';
-                return;
-            }
-
+            if (typeof hashCode === 'undefined') { alert("Файл base.js не найден!"); return; }
             if (hashCode(document.getElementById('passInput').value) === correctHash || localStorage.getItem('auth') === 'true') {
                 localStorage.setItem('auth', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
@@ -92,43 +108,29 @@
                 document.getElementById('mainContent').style.display = 'block';
                 applyFilters();
             } else {
-                document.getElementById('errorText').innerText = "Неверный код!";
                 document.getElementById('errorText').style.display = 'block';
                 document.getElementById('passInput').value = '';
             }
         }
-        
         if (localStorage.getItem('auth') === 'true') verify();
 
-        let currentCat = 'Все', currentDiff = 'Все';
-        function getDiffBadge(diff) {
-            if (diff === 1) return '<span class="badge diff-1">🟢 Легко</span>';
-            if (diff === 2) return '<span class="badge diff-2">🟡 Средне</span>';
-            if (diff === 3) return '<span class="badge diff-3">🔴 Долго</span>';
-            return '';
-        }
+        let currentCat = 'Все';
 
         function applyFilters() {
             const grid = document.getElementById('catalogGrid');
-            
-            // Защита от пропавшего файла base.js
-            if (typeof meals === 'undefined') {
-                grid.innerHTML = '<h3 style="color:#ef4444; grid-column: 1/-1; text-align:center;">База данных пуста! Проверьте, что файл base.js загружен на GitHub.</h3>';
-                return;
-            }
+            if (typeof meals === 'undefined') return;
 
-            let filtered = meals;
+            // Отображаем в каталоге ТОЛЬКО основные блюда (у которых ID меньше 100), скрывая системные допы
+            let filtered = meals.filter(m => m.id < 100);
             if (currentCat !== 'Все') filtered = filtered.filter(m => m.cat === currentCat);
-            if (currentDiff !== 'Все') filtered = filtered.filter(m => m.diff === currentDiff);
             
             grid.innerHTML = '';
-            if(filtered.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Ничего не найдено.</p>';
-                return;
-            }
-
             filtered.forEach(m => {
-                grid.innerHTML += `<div class="card">${getDiffBadge(m.diff)}<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openRecipe(m.id);
+                card.innerHTML = `<div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div>`;
+                grid.appendChild(card);
             });
         }
 
@@ -138,14 +140,60 @@
             applyFilters();
         }
 
-        function setDifficulty(diff) {
-            currentDiff = diff;
-            document.querySelectorAll('#diffFilters .filter-btn').forEach(b => {
-                b.classList.remove('active');
-                if (diff === 'Все' && b.innerText === 'Любая') b.classList.add('active');
-                else if (diff !== 'Все' && b.innerText.includes(diff === 1 ? 'Быстро' : diff === 2 ? 'Средне' : 'Долго')) b.classList.add('active');
-            });
-            applyFilters();
+        // ОТКРЫТИЕ ОКНА С РЕЦЕПТОМ
+        function openRecipe(id) {
+            const meal = meals.find(m => m.id === id);
+            if(!meal) return;
+
+            document.getElementById('modalTitle').innerText = meal.name;
+            document.getElementById('modalImg').src = meal.img || 'https://placehold.co/600x400?text=Нет+фото';
+            document.getElementById('modalRecipe').innerText = meal.recipe;
+            
+            // Сбрасываем блок с допами
+            document.getElementById('addonRecipeBlock').style.display = 'none';
+            const constructor = document.getElementById('modalConstructor');
+            
+            // Если у блюда прописаны addons (конструктор вариантов)
+            if(meal.addons && meal.addons.length > 0) {
+                constructor.style.display = 'block';
+                const btnContainer = document.getElementById('addonButtons');
+                btnContainer.innerHTML = '';
+
+                meal.addons.forEach(addonId => {
+                    const addon = meals.find(m => m.id === addonId);
+                    if(addon) {
+                        const btn = document.createElement('button');
+                        btn.className = 'addon-btn';
+                        btn.innerText = `${addon.icon} ${addon.name}`;
+                        btn.onclick = () => selectAddon(addonId, btn);
+                        btnContainer.appendChild(btn);
+                    }
+                });
+            } else {
+                constructor.style.display = 'none';
+            }
+
+            document.getElementById('recipeModal').style.display = 'flex';
+        }
+
+        // ВЫБОР ДОПОЛНЕНИЯ ВНУТРИ РЕЦЕПТА
+        function selectAddon(addonId, clickedBtn) {
+            // Переключаем активный класс у кнопок конструктора
+            document.querySelectorAll('.addon-btn').forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+
+            const addon = meals.find(m => m.id === addonId);
+            if(!addon) return;
+
+            // Показываем блок рецепта допа и подгружаем данные
+            document.getElementById('addonTitle').innerText = `Вместе с: ${addon.name}`;
+            document.getElementById('addonImg').src = addon.img || 'https://placehold.co/600x400?text=Нет+фото';
+            document.getElementById('addonRecipe').innerText = addon.recipe;
+            document.getElementById('addonRecipeBlock').style.display = 'block';
+        }
+
+        function closeModal(e) {
+            if(e.target.id === 'recipeModal') document.getElementById('recipeModal').style.display = 'none';
         }
     </script>
 </body>
