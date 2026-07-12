@@ -89,13 +89,14 @@
         let phase = 'zhenya';
         let zhenyaPicks = [], alinaPicks = [], uniquePicks = [], ratings = {}, tiedMeals = [];
 
-        function initArena() {
-            const grid = document.getElementById('gameGrid');
-            grid.innerHTML = '';
-            meals.forEach(m => {
-                grid.innerHTML += `<div class="card" id="meal-${m.id}" onclick="togglePick(${m.id})"><div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
-            });
-        }
+function initArena() {
+    const grid = document.getElementById('gameGrid');
+    grid.innerHTML = '';
+    // Фильтруем массив meals, чтобы в Арене выводились только основные блюда (ID < 100)
+    meals.filter(m => m.id < 100).forEach(m => {
+        grid.innerHTML += `<div class="card" id="meal-${m.id}" onclick="togglePick(${m.id})"><div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
+    });
+}
         initArena();
 
         function togglePick(id) {
