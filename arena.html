@@ -37,6 +37,13 @@
         .rps-arena { background: #fef3c7; padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; width: 100%; max-width: 500px; display: none; }
         .rps-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
         .rps-btn { font-size: 2.5rem; padding: 10px 20px; background: white; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; }
+
+        /* Стили для конструктора рецептов на экране победы */
+        .recipe-img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #e5e7eb; }
+        .recipe-text { white-space: pre-line; background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; line-height: 1.5; text-align: left; }
+        .addon-selector { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--primary); text-align: center; }
+        .addon-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 5px; font-weight: bold; }
+        .addon-btn.active { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -64,7 +71,25 @@
         <div id="resultStage">
             <h1 style="text-align: center; font-size: 3rem;" id="winnerText">Победитель!</h1>
             <p style="text-align: center; font-size: 1.2rem;" id="winnerFood"></p>
-            <button class="filter-btn" onclick="location.reload()">🔄 Сыграть заново</button>
+            
+            <div id="winnerRecipeBlock" style="display:none; width:100%; max-width:600px; margin-top:20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+                
+                <div id="winnerConstructor" class="addon-selector" style="display:none;">
+                    <div style="font-weight:bold; margin-bottom:8px;">Что добавим к этому блюду? 🤔</div>
+                    <div id="addonButtons"></div>
+                </div>
+
+                <img id="winnerImg" class="recipe-img" src="" alt="Фото блюда">
+                <div id="winnerRecipeText" class="recipe-text"></div>
+
+                <div id="winnerAddonBlock" style="display:none; border-top: 2px dashed var(--border); padding-top:15px; margin-top:15px;">
+                    <h3 id="winnerAddonTitle">Дополнительно</h3>
+                    <img id="winnerAddonImg" class="recipe-img" src="" alt="Фото добавки">
+                    <div id="winnerAddonRecipe" class="recipe-text"></div>
+                </div>
+            </div>
+
+            <button class="filter-btn" style="margin-top:20px;" onclick="location.reload()">🔄 Сыграть заново</button>
             
             <div class="rps-arena" id="rpsArena">
                 <h3 style="margin-top:0;">Спорная ситуация!</h3>
@@ -81,7 +106,6 @@
 
     <script src="base.js"></script>
     <script>
-        // Проверка входа (если человек не вводил пароль на главной, его выкинет на главную)
         if (localStorage.getItem('auth') !== 'true') {
             window.location.href = 'index.html';
         }
@@ -89,14 +113,14 @@
         let phase = 'zhenya';
         let zhenyaPicks = [], alinaPicks = [], uniquePicks = [], ratings = {}, tiedMeals = [];
 
-function initArena() {
-    const grid = document.getElementById('gameGrid');
-    grid.innerHTML = '';
-    // Фильтруем массив meals, чтобы в Арене выводились только основные блюда (ID < 100)
-    meals.filter(m => m.id < 100).forEach(m => {
-        grid.innerHTML += `<div class="card" id="meal-${m.id}" onclick="togglePick(${m.id})"><div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
-    });
-}
+        function initArena() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            // Выводим только основные блюда
+            meals.filter(m => m.id < 100).forEach(m => {
+                grid.innerHTML += `<div class="card" id="meal-${m.id}" onclick="togglePick(${m.id})"><div class="card-icon">${m.icon}</div><div class="card-content"><h3>${m.name}</h3><p>${m.desc}</p></div></div>`;
+            });
+        }
         initArena();
 
         function togglePick(id) {
@@ -183,13 +207,58 @@ function initArena() {
             }
         }
 
+        // --- ЛОГИКА ОТОБРАЖЕНИЯ ПОБЕДИТЕЛЯ И КОНСТРУКТОРА ---
         function showFinalWinner(mealId) {
             const meal = meals.find(m => m.id === mealId);
             document.getElementById('winnerText').innerText = 'Сегодня едим:';
             document.getElementById('winnerFood').innerHTML = `<span style="font-size: 4rem;">${meal.icon}</span><br><b style="font-size:1.5rem;">${meal.name}</b>`;
             document.getElementById('rpsArena').style.display = 'none';
+
+            // Разворачиваем рецепт победителя
+            document.getElementById('winnerRecipeBlock').style.display = 'block';
+            document.getElementById('winnerImg').src = meal.img || 'https://placehold.co/600x400?text=Нет+фото';
+            document.getElementById('winnerRecipeText').innerText = meal.recipe;
+            
+            // Сбрасываем блок с допами
+            document.getElementById('winnerAddonBlock').style.display = 'none';
+            const constructor = document.getElementById('winnerConstructor');
+            
+            // Если у победителя есть варианты гарниров/мяса
+            if(meal.addons && meal.addons.length > 0) {
+                constructor.style.display = 'block';
+                const btnContainer = document.getElementById('addonButtons');
+                btnContainer.innerHTML = '';
+
+                meal.addons.forEach(addonId => {
+                    const addon = meals.find(m => m.id === addonId);
+                    if(addon) {
+                        const btn = document.createElement('button');
+                        btn.className = 'addon-btn';
+                        btn.innerText = `${addon.icon} ${addon.name}`;
+                        btn.onclick = () => selectWinnerAddon(addonId, btn);
+                        btnContainer.appendChild(btn);
+                    }
+                });
+            } else {
+                constructor.style.display = 'none';
+            }
         }
 
+        // Функция обработки клика по доп. гарниру на экране победы
+        function selectWinnerAddon(addonId, clickedBtn) {
+            document.querySelectorAll('#addonButtons .addon-btn').forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+
+            const addon = meals.find(m => m.id === addonId);
+            if(!addon) return;
+
+            document.getElementById('winnerAddonTitle').innerText = `Вместе с: ${addon.name}`;
+            document.getElementById('winnerAddonImg').src = addon.img || 'https://placehold.co/600x400?text=Нет+фото';
+            document.getElementById('winnerAddonRecipe').innerText = addon.recipe;
+            document.getElementById('winnerAddonBlock').style.display = 'block';
+        }
+
+        // --- ЛОГИКА КАМЕНЬ-НОЖНИЦЫ-БУМАГА ---
         let rpsPhase = 'zhenya', rpsZhenyaPick = '', rpsAlinaPick = '';
         function playRPS(choice) {
             if (rpsPhase === 'zhenya') {
