@@ -2,60 +2,61 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Что поесть? | Арена</title>
     <style>
         :root { --bg-color: #f3f4f6; --text-color: #1f2937; --card-bg: #ffffff; --primary: #3b82f6; --accent: #10b981; --border: #e5e7eb; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        
+        /* Исправление масштаба для мобильных */
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; overflow-x: hidden; }
         
         #navBar { display: flex; background: white; padding: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; }
+        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; font-size: 0.9rem;}
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .container { max-width: 800px; width: 100%; margin: 0 auto; padding: 20px; padding-bottom: 60px; }
+        .container { max-width: 850px; width: 100%; margin: 0 auto; padding: 15px; padding-bottom: 60px; }
         
-        /* Стили игры и навигации */
-        .game-bar { background: #111827; color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 70px; z-index: 80;}
-        .game-bar h2 { margin: 0 0 5px 0; font-size: 1.4rem; }
-        .game-bar p { margin: 0; color: #9ca3af; font-size: 1rem; }
+        .game-bar { background: #111827; color: white; padding: 15px; border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 65px; z-index: 80; width: 100%;}
+        .game-bar h2 { margin: 0 0 5px 0; font-size: 1.2rem; }
+        .game-bar p { margin: 0; color: #9ca3af; font-size: 0.9rem; }
 
-        .step-container { display: none; flex-direction: column; align-items: center; text-align: center; animation: fadeIn 0.3s ease; }
+        .step-container { display: none; flex-direction: column; align-items: center; text-align: center; animation: fadeIn 0.3s ease; width: 100%;}
         .step-container.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .big-btn { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; text-align: left; display: flex; align-items: center; gap: 15px; }
+        .big-btn { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 15px; width: 100%; max-width: 400px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; text-align: left; display: flex; align-items: center; gap: 15px; }
         .big-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .big-btn-icon { font-size: 2.5rem; }
-        .big-btn-text h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
-        .big-btn-text p { margin: 0; color: #6b7280; font-size: 0.9rem; }
+        .big-btn-icon { font-size: 2.2rem; }
+        .big-btn-text h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .big-btn-text p { margin: 0; color: #6b7280; font-size: 0.85rem; }
 
-        .nav-back { align-self: flex-start; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 5px; }
+        .nav-back { align-self: flex-start; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 5px; padding: 5px 0; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; width: 100%; }
-        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 2px solid var(--border); text-align: left; cursor: pointer; transition: 0.2s; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; width: 100%; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; border: 2px solid var(--border); text-align: left; cursor: pointer; transition: 0.2s; width: 100%; }
         .card.selected { border-color: var(--accent); background-color: #ecfdf5; transform: scale(1.02); }
         .card h3 { margin: 10px 0 5px 0; font-size: 1.1rem; }
         .card p { margin: 0; font-size: 0.85rem; color: #6b7280; }
 
-        /* Кнопки действий */
-        .action-btn { background: var(--accent); color: white; border: none; font-weight: bold; padding: 15px 30px; border-radius: 12px; cursor: pointer; width: 100%; max-width: 300px; font-size: 1.1rem; transition: 0.2s; }
+        .action-btn { background: var(--accent); color: white; border: none; font-weight: bold; padding: 15px 20px; border-radius: 12px; cursor: pointer; width: 100%; max-width: 300px; font-size: 1.1rem; transition: 0.2s; }
         .action-btn:hover { background: #059669; }
-        .secondary-btn { background: white; color: #4b5563; border: 1px solid var(--border); padding: 12px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; margin-top: 10px; width: 100%; max-width: 300px; }
+        .secondary-btn { background: white; color: #4b5563; border: 1px solid var(--border); padding: 12px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; margin-top: 10px; width: 100%; max-width: 300px; font-weight: bold;}
         
-        /* Стили голосования */
-        .rating-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; width: 100%; max-width: 500px; }
+        .rating-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; width: 100%; max-width: 500px; }
+        .rating-card h2 { font-size: 1.2rem; }
         .stars { display: flex; gap: 5px; font-size: 1.8rem; color: #e5e7eb; cursor: pointer; }
         .star.active { color: #fbbf24; }
-        .voter-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-weight: bold;}
+        .voter-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-weight: bold; font-size: 0.95rem;}
         
-        /* КНБ и Результат */
-        .rps-arena { background: #fef3c7; padding: 25px; border-radius: 16px; text-align: center; margin-top: 20px; width: 100%; max-width: 500px; display: none; }
-        .rps-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        .rps-btn { font-size: 3rem; padding: 10px 20px; background: white; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .rps-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .rps-arena { background: #fef3c7; padding: 20px; border-radius: 16px; text-align: center; margin-top: 20px; width: 100%; max-width: 500px; display: none; }
+        .rps-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .rps-btn { font-size: 2.5rem; padding: 10px 15px; background: white; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; }
 
-        .recipe-img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #e5e7eb; }
-        .recipe-text { white-space: pre-line; background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; line-height: 1.5; text-align: left; }
+        .recipe-img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; background: #e5e7eb; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        @media (min-width: 600px) { .recipe-img { height: 420px; } }
+        
+        .recipe-text { white-space: pre-line; background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; line-height: 1.5; text-align: left; font-size: 0.95rem; }
         .addon-selector { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--primary); text-align: center; }
         .addon-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 5px; font-weight: bold; }
         .addon-btn.active { background: var(--primary); color: white; }
@@ -70,16 +71,14 @@
 
     <div class="container">
         
-        <!-- ПАНЕЛЬ УПРАВЛЕНИЯ ИГРОЙ -->
         <div class="game-bar" id="gameBar">
             <h2 id="turnTitle">Шаг 1: Женя выбирает еду</h2>
-            <p id="turnDesc">Выбери до 3 блюд для турнира. (Выбрано: 0/3)</p>
+            <p id="turnDesc">Выбери до 3 блюд (Выбрано: 0/3)</p>
             <center>
-                <button class="action-btn" id="nextBtn" style="display: none; margin-top: 15px;" onclick="nextPhase()">Готово, передать ход</button>
+                <button class="action-btn" id="nextBtn" style="display: none; margin-top: 10px; padding: 10px 20px;" onclick="nextPhase()">Готово</button>
             </center>
         </div>
 
-        <!-- ШАГ 1: КАТЕГОРИИ (Отображается по очереди для Жени и Алины) -->
         <div id="stepCategories" class="step-container active">
             <button class="big-btn" onclick="openCategory('Супы')">
                 <div class="big-btn-icon">🍲</div>
@@ -104,27 +103,23 @@
             </button>
         </div>
 
-        <!-- ШАГ 2: ВЫБОР ИЗ СЕТКИ -->
         <div id="stepGrid" class="step-container">
             <button class="nav-back" onclick="backToCategories()">← К категориям</button>
             <div class="grid" id="gameGrid"></div>
         </div>
 
-        <!-- РЕЙТИНГ / ГОЛОСОВАНИЕ -->
         <div id="ratingStage" class="step-container">
-            <h1 style="margin-bottom:5px;">Оцените блюда</h1>
-            <p style="color: #6b7280; margin-bottom:20px;">Поставьте от 1 до 5 звезд каждому кандидату.</p>
+            <h1 style="margin-bottom:5px; font-size: 1.6rem;">Оцените блюда</h1>
+            <p style="color: #6b7280; margin-bottom:20px;">От 1 до 5 звезд каждому кандидату.</p>
             <div id="ratingList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
             <button class="action-btn" style="margin-top:20px;" onclick="calculateWinner()">Узнать победителя 🏆</button>
         </div>
 
-        <!-- РЕЗУЛЬТАТЫ И КНБ -->
         <div id="resultStage" class="step-container">
-            <h1 style="font-size: 2.5rem; color: #111827;" id="winnerText">Победитель!</h1>
-            <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 20px;" id="winnerFood"></p>
+            <h1 style="font-size: 2.2rem; color: #111827; margin-bottom: 5px;" id="winnerText">Победитель!</h1>
+            <p style="font-size: 1.1rem; color: #6b7280; margin-bottom: 20px;" id="winnerFood"></p>
             
-            <!-- Рецепт и Конструктор победителя -->
-            <div id="winnerRecipeBlock" style="display:none; width:100%; max-width:600px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <div id="winnerRecipeBlock" style="display:none; width:100%; max-width:650px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border);">
                 
                 <div id="winnerConstructor" class="addon-selector" style="display:none;">
                     <div style="font-weight:bold; margin-bottom:8px;">Что добавим к этому блюду? 🤔</div>
@@ -143,11 +138,10 @@
 
             <button class="secondary-btn" style="margin-top:25px;" onclick="location.reload()">🔄 Начать новый турнир</button>
             
-            <!-- Арена КНБ -->
             <div class="rps-arena" id="rpsArena">
-                <h2 style="margin-top:0; color: #92400e;">Спорная ситуация! ⚔️</h2>
-                <p>Блюда набрали одинаковый балл. Решаем судьбу ужина через Камень-Ножницы-Бумага.</p>
-                <div style="font-size:1.2rem; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; font-weight: bold;">
+                <h2 style="margin-top:0; color: #92400e; font-size: 1.5rem;">Спорная ситуация! ⚔️</h2>
+                <p style="font-size: 0.9rem;">Блюда набрали одинаковый балл. Решаем судьбу ужина через Камень-Ножницы-Бумага.</p>
+                <div style="font-size:1.1rem; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; font-weight: bold;">
                     Сейчас ходит: <span id="rpsPlayer" style="color: var(--primary);">Женя</span>
                 </div>
                 <div class="rps-buttons">
@@ -161,7 +155,6 @@
 
     <script src="base.js"></script>
     <script>
-        // Проверка авторизации
         if (localStorage.getItem('auth') !== 'true') {
             window.location.href = 'index.html';
         }
@@ -169,12 +162,11 @@
         let phase = 'zhenya';
         let zhenyaPicks = [], alinaPicks = [], uniquePicks = [], ratings = {}, tiedMeals = [];
 
-        // ОТКРЫТИЕ КАТЕГОРИИ
         function openCategory(path) {
             let filtered = [];
             if (path === 'Супы') filtered = meals.filter(m => m.cat === 'Супы');
             else if (path === 'Перекус') filtered = meals.filter(m => m.cat === 'Перекус');
-            else if (path === 'Второе') filtered = meals.filter(m => m.cat === 'Гарнир' || m.cat === 'Самостоятельное');
+            else if (path === 'Второе') filtered = meals.filter(m => m.cat === 'Gарнир' || m.cat === 'Гарнир' || m.cat === 'Самостоятельное');
 
             const grid = document.getElementById('gameGrid');
             grid.innerHTML = '';
@@ -193,15 +185,15 @@
 
             document.getElementById('stepCategories').classList.remove('active');
             document.getElementById('stepGrid').classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        // ВОЗВРАТ К КНОПКАМ КАТЕГОРИЙ
         function backToCategories() {
             document.getElementById('stepGrid').classList.remove('active');
             document.getElementById('stepCategories').classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        // ВЫБОР БЛЮДА
         function togglePick(id) {
             if (phase !== 'zhenya' && phase !== 'alina') return;
             let picks = phase === 'zhenya' ? zhenyaPicks : alinaPicks;
@@ -222,31 +214,29 @@
         }
 
         function updateGameUI(picks) {
-            document.getElementById('turnDesc').innerText = `Выбери до 3 блюд для турнира. (Выбрано: ${picks.length}/3)`;
+            document.getElementById('turnDesc').innerText = `Выбери до 3 блюд (Выбрано: ${picks.length}/3)`;
             document.getElementById('nextBtn').style.display = picks.length > 0 ? 'inline-block' : 'none';
         }
 
-        // СМЕНА ХОДА / ПЕРЕХОД К ГОЛОСОВАНИЮ
         function nextPhase() {
             if (phase === 'zhenya') {
                 phase = 'alina';
                 document.getElementById('turnTitle').innerText = 'Шаг 2: Алина выбирает еду';
                 updateGameUI(alinaPicks);
-                backToCategories(); // Возвращаем Алину на стартовый экран с 3 кнопками
+                backToCategories();
             } else if (phase === 'alina') {
                 phase = 'rate';
                 uniquePicks = [...new Set([...zhenyaPicks, ...alinaPicks])];
                 
-                // Прячем интерфейс выбора
                 document.getElementById('gameBar').style.display = 'none';
                 document.getElementById('stepCategories').classList.remove('active');
                 document.getElementById('stepGrid').classList.remove('active');
                 
+                window.scrollTo(0, 0);
                 startRating();
             }
         }
 
-        // ГЕНЕРАЦИЯ ЭКРАНА ГОЛОСОВАНИЯ
         function startRating() {
             document.getElementById('ratingStage').classList.add('active');
             
@@ -256,7 +246,7 @@
                 ratings[id] = { zhenya: 0, alina: 0 };
                 list.innerHTML += `
                     <div class="rating-card">
-                        <h2 style="margin:0 0 15px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">${meal.icon} ${meal.name}</h2>
+                        <h2 style="margin:0 0 10px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">${meal.icon} ${meal.name}</h2>
                         <div class="voter-row">
                             <span style="color: var(--primary);">Женя:</span>
                             <div class="stars" id="stars-zhenya-${id}">${generateStars(id, 'zhenya')}</div>
@@ -281,7 +271,6 @@
             for(let i=0; i<5; i++) stars[i].classList.toggle('active', i < score);
         }
 
-        // ПОДСЧЕТ ПОБЕДИТЕЛЯ
         function calculateWinner() {
             let allRated = true;
             uniquePicks.forEach(id => { if(ratings[id].zhenya === 0 || ratings[id].alina === 0) allRated = false; });
@@ -289,6 +278,7 @@
 
             document.getElementById('ratingStage').classList.remove('active');
             document.getElementById('resultStage').classList.add('active');
+            window.scrollTo(0, 0);
             
             let maxScore = -1; tiedMeals = [];
             uniquePicks.forEach(id => {
@@ -305,11 +295,10 @@
             }
         }
 
-        // ОТОБРАЖЕНИЕ РЕЦЕПТА И КОНСТРУКТОРА
         function showFinalWinner(mealId) {
             const meal = meals.find(m => m.id === mealId);
             document.getElementById('winnerText').innerText = 'Победа!';
-            document.getElementById('winnerFood').innerHTML = `<span style="font-size: 4rem; display:block; margin: 10px 0;">${meal.icon}</span><b style="font-size:1.5rem; color: #111827;">${meal.name}</b>`;
+            document.getElementById('winnerFood').innerHTML = `<span style="font-size: 3.5rem; display:block; margin: 5px 0;">${meal.icon}</span><b style="font-size:1.3rem; color: #111827;">${meal.name}</b>`;
             document.getElementById('rpsArena').style.display = 'none';
 
             document.getElementById('winnerRecipeBlock').style.display = 'block';
@@ -319,11 +308,16 @@
             document.getElementById('winnerAddonBlock').style.display = 'none';
             const constructor = document.getElementById('winnerConstructor');
             
-            // Если победитель поддерживает добавки (мясо)
             if(meal.addons && meal.addons.length > 0) {
                 constructor.style.display = 'block';
                 const btnContainer = document.getElementById('addonButtons');
                 btnContainer.innerHTML = '';
+
+                const btnNone = document.createElement('button');
+                btnNone.className = 'addon-btn active'; 
+                btnNone.innerText = '🚫 Ничего';
+                btnNone.onclick = () => selectWinnerAddon(null, btnNone);
+                btnContainer.appendChild(btnNone);
 
                 meal.addons.forEach(addonId => {
                     const addon = meals.find(m => m.id === addonId);
@@ -344,6 +338,11 @@
             document.querySelectorAll('#addonButtons .addon-btn').forEach(b => b.classList.remove('active'));
             clickedBtn.classList.add('active');
 
+            if (!addonId) {
+                document.getElementById('winnerAddonBlock').style.display = 'none';
+                return;
+            }
+
             const addon = meals.find(m => m.id === addonId);
             if(!addon) return;
 
@@ -353,7 +352,6 @@
             document.getElementById('winnerAddonBlock').style.display = 'block';
         }
 
-        // ЛОГИКА КАМЕНЬ-НОЖНИЦЫ-БУМАГА
         let rpsPhase = 'zhenya', rpsZhenyaPick = '', rpsAlinaPick = '';
         function playRPS(choice) {
             if (rpsPhase === 'zhenya') {
@@ -362,7 +360,7 @@
                 
                 const pSpan = document.getElementById('rpsPlayer');
                 pSpan.innerText = 'Алина';
-                pSpan.style.color = '#ec4899'; // Розовый цвет для Алины
+                pSpan.style.color = '#ec4899';
             } else {
                 rpsAlinaPick = choice;
                 resolveRPS();
