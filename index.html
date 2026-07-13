@@ -106,8 +106,13 @@
     <script>
         function logout() { localStorage.removeItem('auth'); location.reload(); }
 
+        let currentCat = 'Все', currentDiff = 'Все';
+
         function verify() {
-            if (typeof hashCode === 'undefined') { alert("Файл base.js не найден!"); return; }
+            if (typeof hashCode === 'undefined') { 
+                alert("Критическая ошибка: файл base.js еще не загрузился браузером. Подождите пару секунд и попробуйте снова."); 
+                return; 
+            }
             if (hashCode(document.getElementById('passInput').value) === correctHash || localStorage.getItem('auth') === 'true') {
                 localStorage.setItem('auth', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
@@ -119,9 +124,13 @@
                 document.getElementById('passInput').value = '';
             }
         }
-        if (localStorage.getItem('auth') === 'true') verify();
 
-        let currentCat = 'Все', currentDiff = 'Все';
+        // Ждем ПОЛНОЙ загрузки всей страницы и скриптов, прежде чем проверять авторизацию
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('auth') === 'true') {
+                verify();
+            }
+        });
 
         function getDiffBadge(diff) {
             if (diff === 1) return '<span class="badge diff-1">🟢 Легко</span>';
