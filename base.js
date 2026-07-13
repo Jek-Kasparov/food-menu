@@ -7,133 +7,41 @@ function hashCode(str) {
 }
 
 const meals = [
-    // ==========================================
-    // 🍚 ГАРНИРЫ (Основа Второго блюда)
-    // ==========================================
-    { 
-        id: 11, icon: '🥣', name: 'Картофельное пюре', desc: 'Классическое пюре с маслом.', 
-        cat: 'Гарнир', diff: 2, img: 'https://images.unsplash.com/photo-1621252178229-3a3cce8c290a?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Отвари картошку до готовности.\n2. Слей воду (оставь немного на дне).\n3. Разомни картошку с куском сливочного масла и солью.', 
-        addons: [1, 2, 3, 4, 5, 102, 107] 
-    },
-    { 
-        id: 12, icon: '🍝', name: 'Отварные макароны', desc: 'Базовый гарнир.', 
-        cat: 'Гарнир', diff: 1, img: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. В кипящую подсоленную воду закинь макароны.\n2. Вари 8-10 минут, периодически помешивая.\n3. Слей воду и добавь каплю масла, чтобы не слиплись.', 
-        addons: [1, 2, 3, 4, 5, 103, 104] 
-    },
-    { 
-        id: 13, icon: '🌾', name: 'Гречневая каша', desc: 'Рассыпчатая гречка.', 
-        cat: 'Гарнир', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Buckwheat_kasha.jpg/600px-Buckwheat_kasha.jpg', 
-        recipe: '1. Промой гречку.\n2. Залей водой в пропорции 1:2.\n3. Посоли, доведи до кипения и вари под крышкой 15-20 минут на слабом огне.', 
-        addons: [1, 2, 3, 4, 5, 107] 
-    },
-    { 
-        id: 14, icon: '🥔', name: 'Картошка по-селянски', desc: 'Дольки из аэрогриля.', 
-        cat: 'Гарнир', diff: 1, img: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Картофель помой и нарежь дольками прямо в кожуре.\n2. Смешай с солью, паприкой, сухим чесноком и ложкой масла.\n3. Закинь в аэрогриль на 190°C на 20 минут.', 
-        addons: [1, 4, 5, 102] 
-    },
-    { 
-        id: 15, icon: '🍳', name: 'Жареная картошка', desc: 'С хрустящей корочкой.', 
-        cat: 'Гарнир', diff: 2, img: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Нарежь картошку брусочками.\n2. Жарь на разогретой сковороде с маслом, не мешая первые 5-7 минут, чтобы схватилась корочка.\n3. В конце добавь лук и посоли.', 
-        addons: [2, 3, 5, 101, 102] 
-    },
+    // 🥩 ОСНОВНОЕ
+    { id: 1, icon: '🍗', name: 'Куриные голени', desc: 'Запеченные в аэрогриле.', cat: 'Основное', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Chicken_drumsticks.jpg/640px-Chicken_drumsticks.jpg', recipe: 'Маринад: майонез, чеснок, паприка. Аэрогриль 180°C — 25 минут.' },
+    { id: 2, icon: '🍳', name: 'Печень с луком', desc: 'Быстро и вкусно.', cat: 'Основное', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Chicken_liver_with_onions.jpg/640px-Chicken_liver_with_onions.jpg', recipe: 'Обжарить лук до золота, добавить печень. Жарь 10 минут.' },
+    { id: 3, icon: '🌪️', name: 'Котлеты домашние', desc: 'Сочные и ароматные.', cat: 'Основное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Kottbullar.jpg/640px-Kottbullar.jpg', recipe: 'Фарш + тертый картофель. Запекать в аэрогриле 20 минут.' },
+    { id: 4, icon: '🥩', name: 'Куриная отбивная', desc: 'В золотистом кляре.', cat: 'Основное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Schnitzel.jpg/640px-Schnitzel.jpg', recipe: 'Филе отбить, обмакнуть в муку и яйцо. Жарить до румянца.' },
+    { id: 5, icon: '🥓', name: 'Жареная колбаса', desc: 'Просто и по-мужски.', cat: 'Основное', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Fried_sausage.jpg/640px-Fried_sausage.jpg', recipe: 'Нарезать и обжарить с луком до хруста.' },
 
-    // ==========================================
-    // 🥘 ВСЁ В ОДНОМ (Самостоятельные блюда, появляются во "Втором")
-    // ==========================================
-    { 
-        id: 21, icon: '🍝', name: 'Макароны по-флотски', desc: 'С жареным фаршем и луком.', 
-        cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Makary-po-flotski.jpg/600px-Makary-po-flotski.jpg', 
-        recipe: '1. Отвари макароны.\n2. На сковороде обжарь лук, затем добавь фарш и жарь до готовности.\n3. Перемешай макароны с мясом прямо в сковороде.', addons: [102, 103] 
-    },
-    { 
-        id: 22, icon: '🥘', name: 'Жаркое', desc: 'Картошка тушится с мясом.', 
-        cat: 'Самостоятельное', diff: 3, img: 'https://images.unsplash.com/photo-1548943487-a2e4f43b4850?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Обжарь лук, морковь и курицу.\n2. Добавь крупно нарезанную картошку, залей водой.\n3. Туши под крышкой 30 минут.', addons: [101] 
-    },
-    { 
-        id: 23, icon: '🥞', name: 'Картофельные драники', desc: 'Сытно и просто.', 
-        cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Potato_pancakes_01.jpg/600px-Potato_pancakes_01.jpg', 
-        recipe: '1. Натри картофель и лук, отожми.\n2. Добавь яйцо, ложку муки.\n3. Жарь как оладьи.', addons: [102] 
-    },
-    { 
-        id: 24, icon: '🥘', name: 'Ленивые голубцы', desc: 'Капуста, рис и фарш тушатся вместе.', 
-        cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Golubtsy.jpg/600px-Golubtsy.jpg', 
-        recipe: '1. Обжарь фарш.\n2. Добавь шинкованную капусту, сырой рис.\n3. Залей томатно-сметанным соусом, туши 30 мин.', addons: [] 
-    },
+    // 🍚 ГАРНИРЫ
+    { id: 11, icon: '🥣', name: 'Картофельное пюре', desc: 'Нежное, со сливочным маслом.', cat: 'Гарнир', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Mashed_potatoes.jpg/640px-Mashed_potatoes.jpg', recipe: 'Картофель отварить, размять с маслом и каплей молока.', addons: [1, 2, 3, 4, 5, 102] },
+    { id: 12, icon: '🍝', name: 'Макароны', desc: 'Классический гарнир.', cat: 'Гарнир', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Pasta_in_a_pan.jpg/640px-Pasta_in_a_pan.jpg', recipe: 'Варить 10 минут. Слить воду, добавить масло.', addons: [1, 2, 3, 4, 5, 103, 104] },
+    { id: 13, icon: '🌾', name: 'Гречка', desc: 'Рассыпчатая и полезная.', cat: 'Гарнир', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Buckwheat_kasha.jpg/640px-Buckwheat_kasha.jpg', recipe: 'Гречку промыть, варить 20 минут под крышкой.', addons: [1, 2, 3, 4, 5] },
+    { id: 14, icon: '🥔', name: 'Картошка по-селянски', desc: 'Аэрогриль-стайл.', cat: 'Гарнир', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Roasted_potatoes.jpg/640px-Roasted_potatoes.jpg', recipe: 'Дольки с чесноком и маслом. 20 минут в аэрогриле.', addons: [1, 4, 5] },
+    { id: 15, icon: '🍳', name: 'Жареная картошка', desc: 'С хрустящей корочкой.', cat: 'Гарнир', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Fried_potatoes.jpg/640px-Fried_potatoes.jpg', recipe: 'Жарить на сковороде с луком до золота.', addons: [2, 3, 5, 101] },
 
-    // ==========================================
+    // 🥘 ВСЁ В ОДНОМ
+    { id: 21, icon: '🍝', name: 'Макароны по-флотски', desc: 'Фарш + макароны.', cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Makary-po-flotski.jpg/640px-Makary-po-flotski.jpg', recipe: 'Отварить макароны, обжарить фарш с луком, смешать.' },
+    { id: 22, icon: '🥘', name: 'Жаркое с картошкой', desc: 'Картофель тушеный с мясом.', cat: 'Самостоятельное', diff: 3, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Zharkoe.jpg/640px-Zharkoe.jpg', recipe: 'Тушить картофель с курицей, луком и морковью 30 минут.' },
+    { id: 23, icon: '🥞', name: 'Картофельные драники', desc: 'С луком и чесноком.', cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Potato_pancakes_01.jpg/640px-Potato_pancakes_01.jpg', recipe: 'Тертый картофель, яйцо, мука. Жарить как оладьи.' },
+    { id: 24, icon: '🥘', name: 'Ленивые голубцы', desc: 'Рис, фарш и капуста.', cat: 'Самостоятельное', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Golubtsy.jpg/640px-Golubtsy.jpg', recipe: 'Смешать фарш, рис и капусту, тушить в томате.' },
+
     // 🥣 СУПЫ
-    // ==========================================
-    { 
-        id: 51, icon: '🍲', name: 'Сырный суп с вермишелью', desc: 'Готовится 15 минут.', 
-        cat: 'Супы', diff: 1, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. В кипящую воду кинь картошку и зажарку (лук+морковь).\n2. Через 10 минут добавь жменю вермишели.\n3. Натри 1-2 плавленых сырка, мешай до растворения.', addons: [] 
-    },
-    { 
-        id: 52, icon: '🍗', name: 'Суп с куриными крылышками', desc: 'Дешевый и наваристый.', 
-        cat: 'Супы', diff: 2, img: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Вари крылышки 30 минут.\n2. Добавь картошку кубиками и луково-морковную зажарку.\n3. Вари до готовности картофеля, в конце добавь зелень.', addons: [] 
-    },
-    { 
-        id: 53, icon: '🫘', name: 'Гороховый суп', desc: 'С копченой колбасой.', 
-        cat: 'Супы', diff: 3, img: 'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Развари горох до состояния пюре (около часа).\n2. Добавь картошку.\n3. Обжарь лук с недорогой копченой колбасой и высыпь в суп.', addons: [] 
-    },
-    { 
-        id: 54, icon: '🥘', name: 'Постный борщ с фасолью', desc: 'Без мяса, но очень сытный.', 
-        cat: 'Супы', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Borscht_served.jpg/600px-Borscht_served.jpg', 
-        recipe: '1. Вари картошку и капусту.\n2. Сделай мощную зажарку из свеклы, лука, моркови и томатной пасты.\n3. Отправь зажарку и банку консервированной фасоли в кастрюлю.', addons: [] 
-    },
+    { id: 51, icon: '🍲', name: 'Сырный суп', desc: 'С плавленым сыром.', cat: 'Супы', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Cheese_soup.jpg/640px-Cheese_soup.jpg', recipe: 'Основа — бульон, картошка, плавленый сырок до растворения.' },
+    { id: 52, icon: '🍗', name: 'Суп с крылышками', desc: 'Наваристый и простой.', cat: 'Супы', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Chicken_soup.jpg/640px-Chicken_soup.jpg', recipe: 'Варить крылышки 30 мин, добавить овощи и картошку.' },
+    { id: 53, icon: '🫘', name: 'Гороховый суп', desc: 'С копченостями.', cat: 'Супы', diff: 3, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Pea_soup.jpg/640px-Pea_soup.jpg', recipe: 'Горох разварить до пюре, добавить картофель и копчености.' },
+    { id: 54, icon: '🥘', name: 'Борщ с фасолью', desc: 'Сытный постный.', cat: 'Супы', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Borscht_served.jpg/640px-Borscht_served.jpg', recipe: 'Свекла, капуста, картофель, фасоль из банки.' },
 
-    // ==========================================
     // 🥖 ПЕРЕКУСЫ
-    // ==========================================
-    { 
-        id: 31, icon: '🌯', name: 'Домашняя шаурма', desc: 'Хрустящий лаваш из аэрогриля.', 
-        cat: 'Перекус', diff: 2, img: 'https://images.unsplash.com/photo-1626804475297-41609ea064eb?auto=format&fit=crop&w=600&q=80', 
-        recipe: 'Нарежь начинку, сделай соус. Заверни в лаваш. Аэрогриль: 3-4 минуты при 190°C.', addons: [104] 
-    },
-    { 
-        id: 32, icon: '🥪', name: 'Горячие бутерброды', desc: 'Плавится сыр, хрустит хлеб.', 
-        cat: 'Перекус', diff: 1, img: 'https://images.unsplash.com/photo-1619881589316-16812852136e?auto=format&fit=crop&w=600&q=80', 
-        recipe: 'Хлеб смажь соусом. Положи колбасу и сыр. Запекай в аэрогриле 5 минут при 180°C.', addons: [] 
-    },
-    { 
-        id: 33, icon: '🍕', name: 'Мини-пицца на батоне', desc: 'Быстрая пицца.', 
-        cat: 'Перекус', diff: 1, img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80', 
-        recipe: 'Нарежь батон, смажь кетчупом, выложи колбасу и сыр. Аэрогриль: 180°C на 5 минут.', addons: [] 
-    },
+    { id: 31, icon: '🌯', name: 'Шаурма', desc: 'Домашняя классика.', cat: 'Перекус', diff: 2, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Shaurma.jpg/640px-Shaurma.jpg', recipe: 'Лаваш, курица, капуста, соус. Подпечь в аэрогриле.' },
+    { id: 32, icon: '🥪', name: 'Горячие бутерброды', desc: 'С расплавленным сыром.', cat: 'Перекус', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hot_sandwich.jpg/640px-Hot_sandwich.jpg', recipe: 'Хлеб, колбаса, сыр. Аэрогриль 5 мин.' },
+    { id: 33, icon: '🍕', name: 'Мини-пицца', desc: 'На батоне.', cat: 'Перекус', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Pizza_slice.jpg/640px-Pizza_slice.jpg', recipe: 'Батон, колбаса, сыр, помидор. Запечь.' },
 
-    // ==========================================
-    // 🍗 ДОПОЛНЕНИЯ И МЯСО (Доступны только на шаге выбора гарнира)
-    // ==========================================
-    { 
-        id: 1, icon: '🍗', name: 'Куриные голени в аэрогриле', desc: 'Хрустящая корочка без масла.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Обмажь голени солью, перцем, сухим чесноком и майонезом.\n2. Запекай в аэрогриле 20-25 минут при 180°C.' 
-    },
-    { 
-        id: 2, icon: '🍳', name: 'Печень с луком', desc: 'Готовится ровно 10 минут.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Обжарь лук полукольцами.\n2. Добавь промытую печень.\n3. Жарь на сильном огне 7-10 минут, посоли.' 
-    },
-    { 
-        id: 3, icon: '🌪️', name: 'Экономные котлеты', desc: 'С тертой картошкой для сочности.', cat: 'Дополнения', diff: 2, img: 'https://images.unsplash.com/photo-1599557626359-00f7e411b4ba?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Смешай фарш, яйцо, лук и тертую сырую картофелину.\n2. Сформируй котлеты.\n3. Запекай в аэрогриле при 180°C около 20 минут.' 
-    },
-    { 
-        id: 4, icon: '🥩', name: 'Отбивные из филе', desc: 'В кляре на сковороде.', cat: 'Дополнения', diff: 2, img: 'https://images.unsplash.com/photo-1606728035253-49e8a23146de?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Филе отбей, посоли.\n2. Обмакни в муку, затем в яйцо.\n3. Жарь по 4-5 минут с каждой стороны.' 
-    },
-    { 
-        id: 5, icon: '🥓', name: 'Жареная колбаса с луком', desc: 'Мужская классика.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1609117622956-6134b223ebbb?auto=format&fit=crop&w=600&q=80', 
-        recipe: '1. Нарежь колбасу кружочками, лук полукольцами.\n2. Жарь всё вместе до мощной корочки.' 
-    },
-    { id: 101, icon: '🥗', name: 'Салат из капусты', desc: 'Витаминный салат.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80', recipe: 'Нашинкуй капусту, натри морковь. Помни с солью, заправь маслом.' },
-    { id: 102, icon: '🥒', name: 'Соленый огурчик', desc: 'Классика.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1604543501700-1110eb2cc869?auto=format&fit=crop&w=600&q=80', recipe: 'Достань из банки огурцы, нарежь кружочками.' },
-    { id: 103, icon: '🍅', name: 'Томатный соус', desc: 'Кетчуп или паста.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1607305387299-a3d9611cd469?auto=format&fit=crop&w=600&q=80', recipe: 'Обильно полей блюдо кетчупом.' },
-    { id: 104, icon: '🧀', name: 'Сырный соус', desc: 'Из плавленого сырка.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1582294157140-5e5898d9e8df?auto=format&fit=crop&w=600&q=80', recipe: 'Натри плавленый сырок. Растопи на сковороде с ложкой воды.' },
-    { id: 107, icon: '🥓', name: 'Шкварки с луком', desc: 'Мощная зажарка.', cat: 'Дополнения', diff: 1, img: 'https://images.unsplash.com/photo-1628268909376-e8c56bf8f4fc?auto=format&fit=crop&w=600&q=80', recipe: 'Нарежь сало кубиками, вытопи на сковороде. Добавь лук и жарь до золотистого цвета.' }
+    // 🥗 ДОПОЛНЕНИЯ (ID > 100)
+    { id: 101, icon: '🥗', name: 'Салат из капусты', cat: 'Дополнения', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Coleslaw.jpg/640px-Coleslaw.jpg', recipe: 'Нашинковать капусту, морковь, заправить маслом.' },
+    { id: 102, icon: '🥒', name: 'Соленый огурчик', cat: 'Дополнения', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Pickle.jpg/640px-Pickle.jpg', recipe: 'Нарезать кружочками.' },
+    { id: 103, icon: '🍅', name: 'Томатный соус', cat: 'Дополнения', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Tomato_sauce.jpg/640px-Tomato_sauce.jpg', recipe: 'Кетчуп или томатная паста.' },
+    { id: 104, icon: '🧀', name: 'Сырный соус', cat: 'Дополнения', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Cheese_sauce.jpg/640px-Cheese_sauce.jpg', recipe: 'Плавленый сырок растопить с ложкой воды.' },
+    { id: 107, icon: '🥓', name: 'Шкварки с луком', cat: 'Дополнения', diff: 1, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Greaves.jpg/640px-Greaves.jpg', recipe: 'Сало вытопить, добавить лук.' }
 ];
