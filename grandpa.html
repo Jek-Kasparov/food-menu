@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Еда для дедушки</title>
+    <style>
+        :root { --bg-color: #f8fafc; --text-color: #1e293b; --card-bg: #ffffff; --primary: #0ea5e9; --border: #e2e8f0; --accent: #10b981;}
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; overflow-x: hidden; }
+        
+        #navBar { display: flex; background: white; padding: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .nav-btn { background: var(--bg-color); border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-decoration: none; font-size: 0.9rem;}
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .container { max-width: 850px; width: 100%; margin: 0 auto; padding: 15px; padding-bottom: 60px;}
+        
+        .header-box { text-align: center; margin-bottom: 20px; padding: 20px; background: white; border-radius: 12px; border: 1px solid var(--border); }
+        .header-box h1 { margin: 0 0 5px 0; font-size: 1.6rem; color: #0f172a; }
+        .header-box p { margin: 0; color: #64748b; font-size: 0.95rem; }
+
+        .step-container { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.3s ease; }
+        .step-container.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .big-btn { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 15px; width: 100%; max-width: 450px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; text-align: left; display: flex; align-items: center; gap: 15px; }
+        .big-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .big-btn-icon { font-size: 2.2rem; }
+        .big-btn-text h3 { margin: 0 0 5px 0; font-size: 1.1rem; color: #0f172a; }
+        .big-btn-text p { margin: 0; color: #64748b; font-size: 0.85rem; }
+
+        .nav-back { align-self: flex-start; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 5px; padding: 5px 0; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; width: 100%; }
+        .card { background: white; border-radius: 12px; padding: 20px; border: 2px solid var(--border); cursor: pointer; text-align: left; transition: 0.2s; display: flex; align-items: center; gap: 15px; width: 100%;}
+        .card:hover { border-color: var(--primary); }
+        .card-icon { font-size: 2.5rem; }
+        .card-text h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .card-text p { margin: 0; font-size: 0.85rem; color: #64748b; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; padding: 15px; }
+        .modal-content { background: white; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 16px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #94a3b8; }
+        
+        /* Медиа-блоки (Фото, Эмодзи, Видео) */
+        .recipe-img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; background: #e2e8f0; display: none; }
+        @media (min-width: 600px) { .recipe-img { height: 350px; } }
+        
+        .emoji-placeholder { font-size: 7rem; text-align: center; margin: 20px 0; padding: 40px 0; background: #f8fafc; border-radius: 12px; border: 2px dashed #cbd5e1; display: none; }
+        
+        .recipe-video { width: 100%; height: 250px; border-radius: 12px; margin-bottom: 20px; display: none; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        @media (min-width: 600px) { .recipe-video { height: 315px; } }
+        
+        .recipe-text { white-space: pre-line; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 25px; line-height: 1.6; font-size: 1rem; color: #334155; }
+        
+        .action-btn { background: var(--accent); color: white; border: none; padding: 15px 20px; font-size: 1.1rem; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; transition: 0.2s; }
+        .action-btn:hover { background: #059669; }
+        .secondary-btn { background: white; color: #4b5563; border: 1px solid var(--border); padding: 15px 20px; font-size: 1rem; border-radius: 12px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; transition: 0.2s; }
+        .secondary-btn:hover { border-color: var(--primary); color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div id="navBar">
+        <a href="index.html" class="nav-btn">🍽️ Что выбрать на ужин</a>
+        <a href="grandpa.html" class="nav-btn active">👴 Дедушке</a>
+        <button class="nav-btn" style="background: #ef4444; color: white; border: none; margin-left: auto;" onclick="logout()">Выйти</button>
+    </div>
+
+    <div class="container">
+        <div class="header-box">
+            <h1>Меню для дедушки</h1>
+            <p>Сбалансированная пища. Только варка и тушение (без зажарок).</p>
+        </div>
+
+        <div id="step1" class="step-container active">
+            <button class="big-btn" onclick="openCategory('Все')">
+                <div class="big-btn-icon">🍽️</div>
+                <div class="big-btn-text">
+                    <h3>Все блюда</h3>
+                    <p>Показать полный список одним сплошным меню.</p>
+                </div>
+            </button>
+            <button class="big-btn" onclick="openCategory('Супы')">
+                <div class="big-btn-icon">🍲</div>
+                <div class="big-btn-text">
+                    <h3>Супы</h3>
+                    <p>Легкие бульоны и супы без зажарки.</p>
+                </div>
+            </button>
+            <button class="big-btn" onclick="openCategory('Второе')">
+                <div class="big-btn-icon">🍚</div>
+                <div class="big-btn-text">
+                    <h3>Второе</h3>
+                    <p>Сбалансированная основа: каши, тушеные овощи, мясо.</p>
+                </div>
+            </button>
+            <button class="big-btn" onclick="openCategory('Легкое')">
+                <div class="big-btn-icon">🥚</div>
+                <div class="big-btn-text">
+                    <h3>Легкое и творожное</h3>
+                    <p>Запеканки, каши на молоке, омлеты.</p>
+                </div>
+            </button>
+        </div>
+
+        <div id="step2" class="step-container">
+            <button class="nav-back" onclick="goBack()">← К категориям</button>
+            <div class="grid" id="grandpaGrid"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно рецепта -->
+    <div class="modal" id="recipeModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal(null, true)">&times;</span>
+            
+            <h2 id="modalTitle" style="margin-top:0; padding-right: 30px; color: #0f172a;">Название</h2>
+            
+            <!-- Динамический медиа-блок -->
+            <iframe id="modalVideo" class="recipe-video" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div id="modalEmoji" class="emoji-placeholder"></div>
+            <img id="modalImg" class="recipe-img" src="" alt="Фото блюда">
+            
+            <h3 style="margin-bottom: 10px; color: #0f172a;">Как приготовить:</h3>
+            <div id="modalRecipe" class="recipe-text"></div>
+            
+            <button class="action-btn" id="copyBtn" onclick="copyResult()">📋 Скопировать список</button>
+            <button class="secondary-btn" onclick="closeModal(null, true)">🔄 Назад к выбору</button>
+        </div>
+    </div>
+
+    <script src="base.js"></script>
+    <script>
+        if (localStorage.getItem('auth') !== 'true') window.location.href = 'index.html';
+
+        let currentMeal = null;
+
+        function openCategory(cat) {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+
+            const grid = document.getElementById('grandpaGrid');
+            grid.innerHTML = '';
+            
+            let filtered = grandpaMeals;
+            if (cat !== 'Все') {
+                filtered = grandpaMeals.filter(m => m.cat === cat);
+            }
+
+            filtered.forEach(m => {
+                grid.innerHTML += `
+                    <div class="card" onclick="openRecipe(${m.id})">
+                        <div class="card-icon">${m.icon}</div>
+                        <div class="card-text">
+                            <h3>${m.name}</h3>
+                            <p>${m.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            window.scrollTo(0, 0);
+        }
+
+        function goBack() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+        }
+
+        function openRecipe(id) {
+            currentMeal = grandpaMeals.find(m => m.id === id);
+            if(!currentMeal) return;
+
+            document.getElementById('modalTitle').innerText = currentMeal.name;
+            document.getElementById('modalRecipe').innerText = currentMeal.recipe;
+            
+            const imgEl = document.getElementById('modalImg');
+            const emojiEl = document.getElementById('modalEmoji');
+            const videoEl = document.getElementById('modalVideo');
+            
+            // Сбрасываем видимость всех медиа
+            imgEl.style.display = 'none';
+            emojiEl.style.display = 'none';
+            videoEl.style.display = 'none';
+            videoEl.src = ''; // Останавливаем предыдущее видео
+            
+            // Логика отображения: 1. Видео -> 2. Свое фото -> 3. Эмодзи
+            if (currentMeal.video) {
+                videoEl.style.display = 'block';
+                videoEl.src = currentMeal.video;
+            } else if (!currentMeal.img || currentMeal.img.includes('placehold.co')) {
+                emojiEl.style.display = 'block';
+                emojiEl.innerText = currentMeal.icon;
+            } else {
+                imgEl.style.display = 'block';
+                imgEl.src = currentMeal.img;
+            }
+            
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = '📋 Скопировать список';
+            copyBtn.style.background = 'var(--accent)';
+
+            document.getElementById('recipeModal').style.display = 'flex';
+        }
+
+        function closeModal(e, forceClose = false) {
+            if(forceClose || e.target.id === 'recipeModal') {
+                document.getElementById('recipeModal').style.display = 'none';
+                document.getElementById('modalVideo').src = ''; // Ставим видео на паузу при закрытии
+            }
+        }
+
+        function copyResult() {
+            if (!currentMeal) return;
+            let textToCopy = `Еда для дедушки:\n🍽️ ${currentMeal.name}\n\nРецепт:\n${currentMeal.recipe}`;
+            
+            if (currentMeal.video) {
+                textToCopy += `\n\nВидео-инструкция:\n${currentMeal.video}`;
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = '✅ Успешно скопировано!';
+                btn.style.background = '#059669'; 
+            }).catch(err => {
+                alert('Не удалось скопировать. Ваш браузер блокирует буфер обмена.');
+            });
+        }
+    </script>
+</body>
+</html>
