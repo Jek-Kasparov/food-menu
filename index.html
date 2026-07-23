@@ -138,8 +138,10 @@
 
     <script src="base.js"></script>
     <script>
-        function logout() { localStorage.removeItem('auth'); location.reload(); }
-
+      function logout() { 
+    localStorage.removeItem('auth'); 
+    window.location.href = 'index.html'; 
+}
         function verify() {
             if (typeof hashCode === 'undefined') { 
                 alert("Ошибка: base.js не загружен."); return; 
