@@ -131,10 +131,17 @@
     </div>
 
     <script src="base.js"></script>
-    <script>
+<script>
         if (localStorage.getItem('auth') !== 'true') window.location.href = 'index.html';
 
-        let currentMeal = null;
+        // --- ДОБАВЛЕНА ФУНКЦИЯ ВЫХОДА ---
+        function logout() { 
+            localStorage.removeItem('auth'); 
+            window.location.href = 'index.html'; 
+        }
+        // --------------------------------
+
+        let currentMeal = null; // (или let phase = 'zhenya'; в Арене)
 
         function openCategory(cat) {
             document.getElementById('step1').classList.remove('active');
