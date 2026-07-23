@@ -155,10 +155,17 @@
     </div>
 
     <script src="base.js"></script>
-    <script>
-        if (localStorage.getItem('auth') !== 'true') {
-            window.location.href = 'index.html';
+<script>
+        if (localStorage.getItem('auth') !== 'true') window.location.href = 'index.html';
+
+        // --- ДОБАВЛЕНА ФУНКЦИЯ ВЫХОДА ---
+        function logout() { 
+            localStorage.removeItem('auth'); 
+            window.location.href = 'index.html'; 
         }
+        // --------------------------------
+
+        let currentMeal = null; // (или let phase = 'zhenya'; в Арене)
 
         let phase = 'zhenya';
         let zhenyaPicks = [], alinaPicks = [], uniquePicks = [], ratings = {}, tiedMeals = [];
